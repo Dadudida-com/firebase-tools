@@ -8,7 +8,7 @@ import * as types from "./api-types";
 import * as Spec from "./api-spec";
 import * as sort from "./api-sort";
 import * as util from "./util";
-import { promptOnce } from "../prompt";
+import { confirm } from "../prompt";
 import { firestoreOrigin } from "../api";
 import { FirebaseError } from "../error";
 import { Client } from "../apiv2";
@@ -89,9 +89,9 @@ export class FirestoreApi {
       }
 
       if (!shouldDeleteIndexes) {
-        shouldDeleteIndexes = await promptOnce({
-          type: "confirm",
-          name: "confirm",
+        shouldDeleteIndexes = await confirm({
+          nonInteractive: options.nonInteractive,
+          force: options.force,
           default: false,
           message:
             "Would you like to delete these indexes? Selecting no will continue the rest of the deployment.",
@@ -135,9 +135,9 @@ export class FirestoreApi {
       }
 
       if (!shouldDeleteFields) {
-        shouldDeleteFields = await promptOnce({
-          type: "confirm",
-          name: "confirm",
+        shouldDeleteFields = await confirm({
+          nonInteractive: options.nonInteractive,
+          force: options.force,
           default: false,
           message:
             "Would you like to delete these field overrides? Selecting no will continue the rest of the deployment.",
@@ -754,20 +754,17 @@ export class FirestoreApi {
    * Update a named Firestore Database
    * @param project the Firebase project id.
    * @param databaseId the name of the Firestore Database
-   * @param type FIRESTORE_NATIVE or DATASTORE_MODE
    * @param deleteProtectionState DELETE_PROTECTION_ENABLED or DELETE_PROTECTION_DISABLED
    * @param pointInTimeRecoveryEnablement POINT_IN_TIME_RECOVERY_ENABLED or POINT_IN_TIME_RECOVERY_DISABLED
    */
   async updateDatabase(
     project: string,
     databaseId: string,
-    type?: types.DatabaseType,
     deleteProtectionState?: types.DatabaseDeleteProtectionState,
     pointInTimeRecoveryEnablement?: types.PointInTimeRecoveryEnablement
   ): Promise<types.DatabaseResp> {
     const url = `/projects/${project}/databases/${databaseId}`;
     const payload: types.DatabaseReq = {
-      type,
       deleteProtectionState,
       pointInTimeRecoveryEnablement,
     };
